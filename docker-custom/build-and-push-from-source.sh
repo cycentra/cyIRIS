@@ -4,7 +4,7 @@
 
 set -e
 
-VERSION="1.0.0"
+VERSION="1.0.1"
 IMAGE_NAME="ghcr.io/cycentra/cyiris"
 BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')
 

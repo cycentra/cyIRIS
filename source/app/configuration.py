@@ -295,6 +295,20 @@ class Config:
     SESSION_COOKIE_SECURE = True
     MFA_ENABLED = config.load('IRIS', 'MFA_ENABLED', fallback=False) == 'True'
 
+    # ── Reverse Proxy Support ────────────────────────────────────────────────────
+    # Extract APPLICATION_ROOT from IRIS_UPSTREAM_SERVER if running behind reverse proxy
+    # Example: IRIS_UPSTREAM_SERVER=https://cy360.domain.com/cyiris → APPLICATION_ROOT=/cyiris
+    _UPSTREAM_SERVER = config.load('IRIS', 'UPSTREAM_SERVER', fallback='')
+    if _UPSTREAM_SERVER:
+        from urllib.parse import urlparse
+        _parsed = urlparse(_UPSTREAM_SERVER)
+        APPLICATION_ROOT = _parsed.path.rstrip('/') if _parsed.path != '/' else None
+        PREFERRED_URL_SCHEME = _parsed.scheme or 'https'
+        log.info(f"Reverse proxy detected: APPLICATION_ROOT={APPLICATION_ROOT}, PREFERRED_URL_SCHEME={PREFERRED_URL_SCHEME}")
+    else:
+        APPLICATION_ROOT = None
+        PREFERRED_URL_SCHEME = 'https'
+
     PG_ACCOUNT = PG_ACCOUNT_
     PG_PASSWD = PG_PASSWD_
     PGA_ACCOUNT = PGA_ACCOUNT_
